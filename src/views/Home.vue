@@ -1,30 +1,21 @@
 <template>
   <div class="home">
-    <div class="form-container"><!-- TODO: Modulate display of the .form-container using v-show and the showForm variable. -->
+    <div class="form-container" v-show="showForm">
       <h1>Join the Web Developers Club!</h1>
       <p>Sign up to access our special, secret page. Just create an account and answer a brief survey.</p>
-
-      <!-- TODO: Add an HTML element to display an error message for when the user submits invalid information. Use v-show to show/hide this message based on the validity of the form data. -->
-
-      <form><!-- TODO: Add the proper v-on directive to let the validateForm method handle this form when it is submitted -->
-
-        <!-- TODO: Add labels for each form field in this form. -->
-
-        <!-- TODO: Add a username field. -->
-
-        <!-- TODO: Add an email field. -->
-
-        <!-- TODO: Add a password field. -->
-
-        <!-- TODO: Add a passwordVerify field. -->
-
+      <p class="error-message" v-show="showError"> {{ errorMessage }} </p>
+      <form v-on:submit.prevent="validateForm">
+        <label>Username <input type="text" name="username" v-model="username" tabindex="0"></label>
+        <label>Email <input type="text" name="email" v-model="email" tabindex="0"></label>
+        <label>Password <input type="new-password" name="password" v-model="password" tabindex="0"></label>
+        <label>Re-enter Password <input type="new-password" name="passwordVerify" v-model="passwordVerify" tabindex="0"></label>
 
         <p><input type="submit" value="Submit"></p>
       </form>
     </div>
-    <div class="success-message"><!-- TODO: Modulate display of the .success-message using v-show and the showForm variable. -->
+    <div class="success-message" v-show="!showForm">
       <h1>Thank you for signing up!</h1>
-      <p>Please take our new member survey. Click here</p><!-- TODO: Link "Click here" to the survey page. -->
+      <p>Please take our new member survey.  <router-link to="/Survey">Click here</router-link></p>
     </div>
   </div>
 </template>
@@ -39,19 +30,36 @@ export default {
       password: '',
       passwordVerify: '',
       showForm: true,
-      showError: false
+      showError: false,
+      errorMessage: ''
     }
   },
   methods: {
     validateForm: function () {
-      // Validate the form by checking the following values:
-      // username must not be blank
-      // email must not be blank
-      // password and passwordVerify must be equal
-      //
-      // When the form is validated, show the .success-message content
-      // If the form is invalid, show the form error message
+      this.errorMessage = ''
+      if (this.username === '') {
+        this.errorMessage = this.errorMessage + 'Please enter a Username. '
+      }
+      if (this.email === '') {
+        this.errorMessage = this.errorMessage + 'Please enter an Email. '
+      } else if (!this.email.includes('@')) {
+        this.errorMessage += 'Please format email address correctly. '
+      }
 
+      if (this.password === '') {
+        this.errorMessage = this.errorMessage + 'Please enter a Password. '
+      }
+      if (this.password !== this.passwordVerify) {
+        this.errorMessage = this.errorMessage + 'Passwords must match each other.'
+      }
+      if (this.errorMessage !== '') {
+        this.showError = true
+        this.showForm = true
+      } else {
+        this.showError = false
+        this.showForm = false
+      }
+      return this.errorMessage
     }
   }
 }
